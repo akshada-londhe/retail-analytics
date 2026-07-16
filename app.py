@@ -1,22 +1,25 @@
 from flask import Flask
 from config import DevelopmentConfig
+from models import db
 
 
 def create_app(config_class=DevelopmentConfig):
     """Application factory."""
     app = Flask(__name__)
     app.config.from_object(config_class)
-
-    @app.route("/")
+    
+    db.init_app(app)
+    
+    with app.app_context():
+        db.create_all()
+    
+    @app.route('/')
     def home():
-        return {
-            "message": "Retail Analytics API",
-            "status": "Running"
-        }, 200
-
+        return {'message': 'Retail Analytics API'}, 200
+    
     return app
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = create_app()
     app.run(debug=True)
