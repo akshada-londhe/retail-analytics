@@ -13,7 +13,7 @@ def login():
         
         if username == 'admin' and password == 'admin':
             session['user'] = username
-            return redirect('/dashboard')
+            return redirect('/')
         else:
             return render_template('login.html', error='Invalid credentials')
     
@@ -24,4 +24,4 @@ def login():
 def logout():
     """Handle logout."""
     session.pop('user', None)
-    return redirect('/')
+    return redirect('/dashboard')
