@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Retail Analytics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <h1>Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Sales</h5>
+                <p class="card-text display-6" id="total-sales">$0</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Profit</h5>
+                <p class="card-text display-6" id="total-profit">$0</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Avg Order Value</h5>
+                <p class="card-text display-6" id="avg-order">$0</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Orders</h5>
+                <p class="card-text display-6" id="total-orders">0</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <canvas id="salesChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="categoryChart"></canvas>
+    </div>
+</div>
+{% endblock %}
