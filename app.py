@@ -1,6 +1,6 @@
 from flask import Flask
 from config import DevelopmentConfig
-from models import db
+from models import db, User
 
 
 def create_app(config_class=DevelopmentConfig):
@@ -25,14 +25,22 @@ def create_app(config_class=DevelopmentConfig):
     with app.app_context():
         db.create_all()
 
+        # Create default admin user if it doesn't exist
+        if not User.query.filter_by(username='admin').first():
+            admin = User(
+                username='admin',
+                email='admin@example.com',
+                password_hash='admin'   # Temporary only
+            )
+            db.session.add(admin)
+            db.session.commit()
+
     print("\n===== Registered Routes =====")
     for rule in app.url_map.iter_rules():
         print(rule)
     print("=============================\n")
 
-
-    return app   
-
+    return app
 
 
 if __name__ == '__main__':

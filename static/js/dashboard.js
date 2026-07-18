@@ -1,34 +1,51 @@
 
-const chartScript = document.createElement('script');
-chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js';
-document.head.appendChild(chartScript);
+document.addEventListener('DOMContentLoaded', function () {
 
+    // Only run on the dashboard page
+    if (!document.getElementById('total-sales')) {
+        return;
+    }
 
-chartScript.onload = function() {
-    loadDashboard();
-};
+    const chartScript = document.createElement('script');
+    chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js';
+
+    chartScript.onload = function () {
+        loadDashboard();
+    };
+
+    document.head.appendChild(chartScript);
+
+    console.log('Dashboard initialized');
+});
 
 function loadDashboard() {
-    
+
+    // Load KPI cards
     fetch('/api/dashboard')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('total-sales').textContent = 
-                '$' + data.total_sales.toLocaleString('en-US', {maximumFractionDigits: 0});
-            document.getElementById('total-profit').textContent = 
-                '$' + data.total_profit.toLocaleString('en-US', {maximumFractionDigits: 0});
-            document.getElementById('avg-order').textContent = 
-                '$' + data.avg_order_value.toLocaleString('en-US', {maximumFractionDigits: 2});
-            document.getElementById('total-orders').textContent = 
+            document.getElementById('total-sales').textContent =
+                '$' + data.total_sales.toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+            document.getElementById('total-profit').textContent =
+                '$' + data.total_profit.toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+            document.getElementById('avg-order').textContent =
+                '$' + data.avg_order_value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+            document.getElementById('total-orders').textContent =
                 data.total_orders.toLocaleString();
-        });
-    
-    
+        })
+        .catch(error => console.error('Dashboard API Error:', error));
+
+    // Monthly Sales Chart
     fetch('/api/sales/monthly')
         .then(response => response.json())
         .then(data => {
+
             const salesData = data.monthly_sales;
             const ctx = document.getElementById('salesChart').getContext('2d');
+
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -50,14 +67,18 @@ function loadDashboard() {
                     }
                 }
             });
-        });
-    
-    
+
+        })
+        .catch(error => console.error('Monthly Sales Error:', error));
+
+    // Sales by Region Chart
     fetch('/api/sales/by-region')
         .then(response => response.json())
         .then(data => {
+
             const regionData = data.sales_by_region;
-            const ctx = document.getElementById('categoryChart').getContext('2d');
+            const ctx = document.getElementById('regionChart').getContext('2d');
+
             new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -83,9 +104,7 @@ function loadDashboard() {
                     }
                 }
             });
-        });
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Dashboard initialized');
-});
+        })
+        .catch(error => console.error('Region Sales Error:', error));
+}
