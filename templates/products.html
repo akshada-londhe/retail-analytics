@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Products - Retail Analytics{% endblock %}
+
+{% block content %}
+{% if not has_uploads %}
+<div class="panel text-center" style="padding: 5rem 2rem; max-width: 600px; margin: 4rem auto; border: 1px solid var(--border-color); border-radius: 16px;">
+  <div style="font-size: 3.5rem; margin-bottom: 1.5rem; opacity: 0.85;">📊</div>
+  <h3 style="margin-bottom: 1rem; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.5px;">No Data Available</h3>
+  <p class="text-secondary" style="margin-bottom: 2rem; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; font-size: 0.95rem;">
+    Please upload a CSV dataset to activate your analytics workspace. Once uploaded, we will automatically analyze your sales, products, and customer segments.
+  </p>
+  <a href="/upload/" class="btn btn-primary" style="padding: 0.65rem 1.5rem; font-size: 0.9rem;">Upload Dataset</a>
+</div>
+{% else %}
+<div class="page-head">
+  <div>
+    <h2 class="display">Product Inventory & Performance</h2>
+    <p>Breakdown of products sold, category segments, and profit contributions</p>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="tag">
+    <p class="label">Top Product by Sales</p>
+    <p class="value" id="kpi-top-prod">--</p>
+  </div>
+  <div class="tag">
+    <p class="label">Unique Products</p>
+    <p class="value" id="kpi-unique-prod">--</p>
+  </div>
+  <div class="tag">
+    <p class="label">Most Profitable Category</p>
+    <p class="value" id="kpi-top-cat">--</p>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header">
+    <h3>Product Sales Ledger <span class="tag-mono">TABLE 02</span></h3>
+    <div class="filter-controls">
+      <select id="categoryFilter" class="chip-select">
+        <option value="">All Categories</option>
+      </select>
+      <input type="text" id="productSearch" placeholder="Search product name...">
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="leaders" id="productsTable">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Category</th>
+          <th>Sub-Category</th>
+          <th style="text-align:right">Total Sales</th>
+          <th style="text-align:right">Total Profit</th>
+          <th style="text-align:right">Avg Discount</th>
+        </tr>
+      </thead>
+      <tbody id="productsTableBody">
+        <!-- Shimmer Table rows -->
+        <tr class="shimmer-row">
+          <td><div class="shimmer" style="width: 250px; height: 16px;"></div></td>
+          <td><div class="shimmer" style="width: 80px; height: 16px;"></div></td>
+          <td><div class="shimmer" style="width: 100px; height: 16px;"></div></td>
+          <td><div class="shimmer" style="width: 80px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 80px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 60px; height: 16px; margin-left: auto;"></div></td>
+        </tr>
+        <tr class="shimmer-row">
+          <td><div class="shimmer" style="width: 220px; height: 16px;"></div></td>
+          <td><div class="shimmer" style="width: 80px; height: 16px;"></div></td>
+          <td><div class="shimmer" style="width: 80px; height: 16px;"></div></td>
+          <td><div class="shimmer" style="width: 90px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 90px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 50px; height: 16px; margin-left: auto;"></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if has_uploads %}
+<script>
+  let allProductsData = [];
+
+  document.addEventListener('DOMContentLoaded', function() {
+      loadProductData();
+
+      document.getElementById('productSearch').addEventListener('input', applyFilters);
+      document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+  });
+
+  function loadProductData() {
+      fetch('/api/dashboard')
+          .then(res => res.json())
+          .then(data => {
+              if (!data.error) {
+                  document.getElementById('kpi-unique-prod').textContent = data.unique_products.toLocaleString();
+              }
+          })
+          .catch(err => console.error(err));
+
+      fetch('/api/products')
+          .then(res => res.json())
+          .then(data => {
+              if (data.products) {
+                  allProductsData = data.products;
+                  
+                  if (allProductsData.length > 0) {
+                      document.getElementById('kpi-top-prod').textContent = allProductsData[0].Product;
+                  }
+                  
+                  populateCategoryFilter();
+                  determineTopCategory();
+                  applyFilters();
+              }
+          })
+          .catch(err => console.error(err));
+  }
+
+  function populateCategoryFilter() {
+      const select = document.getElementById('categoryFilter');
+      const categories = [...new Set(allProductsData.map(p => p.Category))];
+      const currentSelection = select.value;
+      
+      select.innerHTML = '<option value="">All Categories</option>';
+      categories.sort().forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat;
+          opt.textContent = cat;
+          select.appendChild(opt);
+      });
+      
+      if (categories.includes(currentSelection)) {
+          select.value = currentSelection;
+      }
+  }
+
+  function determineTopCategory() {
+      const categoryProfits = {};
+      allProductsData.forEach(p => {
+          categoryProfits[p.Category] = (categoryProfits[p.Category] || 0) + p.TotalProfit;
+      });
+
+      let topCat = '--';
+      let maxProfit = -Infinity;
+      for (let cat in categoryProfits) {
+          if (categoryProfits[cat] > maxProfit) {
+              maxProfit = categoryProfits[cat];
+              topCat = cat;
+          }
+      }
+      document.getElementById('kpi-top-cat').textContent = topCat;
+  }
+
+  function applyFilters() {
+      const searchQuery = document.getElementById('productSearch').value.toLowerCase();
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const tbody = document.getElementById('productsTableBody');
+      
+      tbody.innerHTML = '';
+      
+      const filtered = allProductsData.filter(p => {
+          const matchesSearch = p.Product.toLowerCase().includes(searchQuery);
+          const matchesCategory = !categoryFilter || p.Category === categoryFilter;
+          return matchesSearch && matchesCategory;
+      });
+
+      if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center">No products found matching filters</td></tr>';
+          return;
+      }
+
+      filtered.forEach(p => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+              <td><span style="font-weight: 600; color: var(--text-primary);">${p.Product}</span></td>
+              <td><span class="badge badge-accent">${p.Category}</span></td>
+              <td>${p.SubCategory}</td>
+              <td style="text-align:right">$${p.TotalSales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td style="text-align:right" class="${p.TotalProfit >= 0 ? 'profit-positive' : 'profit-negative'}">
+                  $${p.TotalProfit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+              </td>
+              <td style="text-align:right">${(p.AvgDiscount * 100).toFixed(1)}%</td>
+          `;
+          tbody.appendChild(row);
+      });
+  }
+</script>
+{% endif %}
+{% endblock %}

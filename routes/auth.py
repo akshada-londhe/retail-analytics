@@ -33,8 +33,7 @@ def signup():
         db.session.commit()
 
         session['user'] = username
-        return redirect('/dashboard')
-
+        return redirect('/dashboard/')
     return render_template('signup.html')
 
 
@@ -48,7 +47,7 @@ def login():
 
         if user and user.check_password(password):
             session['user'] = username
-            return redirect('/dashboard')
+            return redirect('/dashboard/')
 
         return render_template('login.html', error='Invalid credentials')
 

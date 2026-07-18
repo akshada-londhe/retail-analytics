@@ -3,7 +3,7 @@ import pandas as pd
 
 def add_time_features(df):
     """Add month, year, quarter columns."""
-    df['Order Date'] = pd.to_datetime(df['Order Date'])
+    df['Order Date'] = pd.to_datetime(df['Order Date'], format='mixed', errors='coerce')
     df['Year'] = df['Order Date'].dt.year
     df['Month'] = df['Order Date'].dt.month
     df['Quarter'] = df['Order Date'].dt.quarter

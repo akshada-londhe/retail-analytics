@@ -15,7 +15,7 @@ def fix_dates(df):
     date_columns = ['Order Date', 'Ship Date']
     for col in date_columns:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors='coerce')
+            df[col] = pd.to_datetime(df[col], format='mixed', errors='coerce')
     return df
 
 
@@ -49,6 +49,14 @@ def standardize_text(df):
 def clean_data(df, remove_nulls_flag=True, remove_negative_flag=True):
     """Master data cleaning function."""
     print("Starting data cleaning...")
+
+    # Standardize column headers for alternative Superstore formats
+    rename_dict = {
+        'Customer Name': 'Customer',
+        'Product Name': 'Product',
+        'Sub-Category': 'Sub Category'
+    }
+    df = df.rename(columns={k: v for k, v in rename_dict.items() if k in df.columns})
 
     df = remove_duplicates(df)
     df = fix_dates(df)
