@@ -29,11 +29,13 @@ def add_customer_metrics(df):
         'Sales': ['sum', 'count', 'mean'],
         'Profit': 'sum'
     }).reset_index()
-    
-    customer_stats.columns = ['Customer', 'Customer_Total_Sales', 
-                            'Customer_Order_Count', 'Customer_Avg_Order',
-                            'Customer_Total_Profit']
-    
+
+    customer_stats.columns = [
+        'Customer', 'Customer_Total_Sales',
+        'Customer_Order_Count', 'Customer_Avg_Order',
+        'Customer_Total_Profit'
+    ]
+
     df = df.merge(customer_stats, on='Customer', how='left')
     return df
 
@@ -41,11 +43,11 @@ def add_customer_metrics(df):
 def engineer_features(df):
     """Master feature engineering function."""
     print("Starting feature engineering...")
-    
+
     df = add_time_features(df)
     df = add_profit_margin(df)
     df = add_discount_impact(df)
     df = add_customer_metrics(df)
-    
+
     print(f"Feature engineering complete. Shape: {df.shape}")
     return df

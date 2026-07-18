@@ -1,6 +1,3 @@
-import pandas as pd
-
-
 def total_sales(df):
     """Calculate total sales."""
     return df['Sales'].sum()

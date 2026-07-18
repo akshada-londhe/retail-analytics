@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def remove_duplicates(df):
-    
+    """Remove duplicate rows from DataFrame."""
     before = len(df)
     df = df.drop_duplicates()
     after = len(df)
@@ -11,7 +11,7 @@ def remove_duplicates(df):
 
 
 def fix_dates(df):
-    
+    """Convert date columns to datetime dtype."""
     date_columns = ['Order Date', 'Ship Date']
     for col in date_columns:
         if col in df.columns:
@@ -47,18 +47,18 @@ def standardize_text(df):
 
 
 def clean_data(df, remove_nulls_flag=True, remove_negative_flag=True):
-    
+    """Master data cleaning function."""
     print("Starting data cleaning...")
-    
+
     df = remove_duplicates(df)
     df = fix_dates(df)
     df = standardize_text(df)
-    
+
     if remove_nulls_flag:
         df = remove_nulls(df)
-    
+
     if remove_negative_flag:
         df = remove_negative_sales(df)
-    
+
     print(f"Cleaning complete. Final shape: {df.shape}")
     return df

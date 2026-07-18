@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Retail Analytics{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">R</div>
+      <h1 class="display">Retail Analytics</h1>
+      <p>STORE-CTRL v1.0</p>
+    </div>
+    <nav class="storelist">
+      <a class="{{ 'active' if active_page == 'dashboard' }}" href="/dashboard"><span class="num">01</span> Dashboard</a>
+      <a class="{{ 'active' if active_page == 'customers' }}" href="/customers"><span class="num">02</span> Customers</a>
+      <a class="{{ 'active' if active_page == 'products' }}" href="/products"><span class="num">03</span> Products</a>
+      <a class="{{ 'active' if active_page == 'reports' }}" href="/reports"><span class="num">04</span> Reports</a>
+      <a class="{{ 'active' if active_page == 'upload' }}" href="/upload"><span class="num">05</span> Upload data</a>
+    </nav>
+  </aside>
+  <main class="main">
+    {% block ticker %}{% endblock %}
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

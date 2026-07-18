@@ -5,8 +5,6 @@ from pathlib import Path
 
 
 def load_dataset(filepath):
-    
-
     filepath = Path(filepath)
 
     if not filepath.exists():

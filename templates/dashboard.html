@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Retail Analytics{% endblock %}
+
+{% block ticker %}
+<div class="ticker" id="ticker">
+  <span>SALES MTD <b id="t-sales">--</b></span>
+  <span>PROFIT MTD <b id="t-profit">--</b></span>
+  <span>AOV <b id="t-aov">--</b></span>
+  <span>ORDERS <b id="t-orders">--</b></span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h2 class="display">Sales overview</h2>
+    <p>Superstore dataset</p>
+  </div>
+  <div class="filter-row">
+    <button class="chip active" data-range="ytd">This year</button>
+    <button class="chip" data-range="last">Last year</button>
+    <a class="chip" href="/api/reports?format=csv">Export ↓</a>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="tag">
+    <p class="label">Total sales</p>
+    <p class="value" id="kpi-sales">--</p>
+    <p class="delta" id="kpi-sales-delta"></p>
+    <div class="barcode"></div>
+  </div>
+  <div class="tag">
+    <p class="label">Total profit</p>
+    <p class="value" id="kpi-profit">--</p>
+    <p class="delta" id="kpi-profit-delta"></p>
+    <div class="barcode"></div>
+  </div>
+  <div class="tag">
+    <p class="label">Avg order value</p>
+    <p class="value" id="kpi-aov">--</p>
+    <p class="delta" id="kpi-aov-delta"></p>
+    <div class="barcode"></div>
+  </div>
+  <div class="tag">
+    <p class="label">Total customers</p>
+    <p class="value" id="kpi-customers">--</p>
+    <p class="delta" id="kpi-customers-delta"></p>
+    <div class="barcode"></div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <h3>Monthly sales trend <span class="tag-mono">FIG. 01</span></h3>
+    <canvas id="salesChart"></canvas>
+  </div>
+  <div class="panel">
+    <h3>Top products <span class="tag-mono">FIG. 02</span></h3>
+    <table class="leaders" id="topProductsTable">
+      <tr><th>Product</th><th style="text-align:right">Sales</th></tr>
+    </table>
+  </div>
+</div>
+
+<div class="grid-3">
+  <div class="panel">
+    <h3>Sales by region <span class="tag-mono">FIG. 03</span></h3>
+    <canvas id="regionChart"></canvas>
+  </div>
+  <div class="panel">
+    <h3>Sales by category <span class="tag-mono">FIG. 04</span></h3>
+    <canvas id="categoryChart"></canvas>
+  </div>
+  <div class="panel">
+    <h3>Customer segments (RFM)</h3>
+    <div id="segmentList"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Retail Analytics Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero text-center text-white py-5 mb-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Smart Retail Analytics Platform</h1>
+        <p class="lead mb-4">
+            Upload your sales data, explore interactive dashboards, and generate
+            actionable reports — all in one place.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/signup" class="btn btn-light btn-lg px-4">Get Started</a>
+            <a href="/login" class="btn btn-outline-light btn-lg px-4">Sign In</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="container mb-5">
+    <h2 class="text-center mb-4">Features</h2>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">📤</div>
+                    <h5 class="card-title">Upload Data</h5>
+                    <p class="card-text text-muted">Import CSV sales files and store them securely per user.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">📊</div>
+                    <h5 class="card-title">Analytics Dashboard</h5>
+                    <p class="card-text text-muted">Visualize sales, profit and orders with live KPIs.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">📈</div>
+                    <h5 class="card-title">Charts</h5>
+                    <p class="card-text text-muted">Monthly trends, regional and category breakdowns.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">📄</div>
+                    <h5 class="card-title">Reports</h5>
+                    <p class="card-text text-muted">Export summaries, CSV and Excel reports.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="container mb-5">
+    <h2 class="text-center mb-4">How It Works</h2>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="step-badge">1</div>
+            <h5 class="mt-3">Upload</h5>
+            <p class="text-muted">Upload your first CSV dataset from the dashboard.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="step-badge">2</div>
+            <h5 class="mt-3">Analyze</h5>
+            <p class="text-muted">Explore KPIs and charts generated automatically.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="step-badge">3</div>
+            <h5 class="mt-3">Report</h5>
+            <p class="text-muted">Download reports to share with your team.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Tech stack -->
+<section class="container mb-5">
+    <h2 class="text-center mb-4">Tech Stack</h2>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+        <span class="badge tech-badge">Flask</span>
+        <span class="badge tech-badge">Flask-SQLAlchemy</span>
+        <span class="badge tech-badge">SQLite</span>
+        <span class="badge tech-badge">Pandas</span>
+        <span class="badge tech-badge">NumPy</span>
+        <span class="badge tech-badge">Chart.js</span>
+        <span class="badge tech-badge">Bootstrap 5</span>
+        <span class="badge tech-badge">OpenPyXL</span>
+    </div>
+</section>
+{% endblock %}
