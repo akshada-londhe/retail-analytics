@@ -1,3 +1,5 @@
+"""Analytics services for retail data processing."""
+
 import pandas as pd
 
 
@@ -62,3 +64,87 @@ def get_dashboard_kpis(df):
         'unique_products': int(df['Product'].nunique()),
         'total_orders': len(df)
     }
+
+
+def get_customer_metrics(df):
+    """Get customer list with sales, count, average value, profit."""
+    customer_stats = df.groupby('Customer').agg({
+        'Sales': ['sum', 'count', 'mean'],
+        'Profit': 'sum'
+    }).reset_index()
+
+    customer_stats.columns = [
+        'Customer', 'TotalSales', 'OrderCount', 'AvgOrderValue', 'TotalProfit'
+    ]
+    # Sort by total sales descending
+    customer_stats = customer_stats.sort_values(by='TotalSales', ascending=False)
+    return customer_stats.to_dict(orient='records')
+
+
+def get_product_metrics(df):
+    """Get product list with sales, category, subcategory, profit, discount."""
+    product_stats = df.groupby(['Product', 'Category', 'Sub Category']).agg({
+        'Sales': 'sum',
+        'Profit': 'sum',
+        'Discount': 'mean'
+    }).reset_index()
+
+    product_stats.columns = [
+        'Product', 'Category', 'SubCategory', 'TotalSales', 'TotalProfit', 'AvgDiscount'
+    ]
+    product_stats = product_stats.sort_values(by='TotalSales', ascending=False)
+    return product_stats.to_dict(orient='records')
+
+
+def calculate_rfm_segments(df):
+    """Calculate RFM segments for customer segmentation."""
+    # Find max date in dataset
+    max_date = pd.to_datetime(df['Order Date'], format='mixed', errors='coerce').max()
+
+    rfm = df.groupby('Customer').agg({
+        'Order Date': lambda x: (max_date - pd.to_datetime(x, format='mixed', errors='coerce').max()).days,
+        'Sales': ['count', 'sum']
+    }).reset_index()
+
+    rfm.columns = ['Customer', 'Recency', 'Frequency', 'Monetary']
+
+    # Handle quintile cuts safely
+    try:
+        rfm['R_Score'] = pd.qcut(rfm['Recency'], 5, labels=[5, 4, 3, 2, 1], duplicates='drop')
+    except Exception:
+        rfm['R_Score'] = 3
+
+    try:
+        rfm['F_Score'] = pd.qcut(rfm['Frequency'].rank(method='first'), 5, labels=[1, 2, 3, 4, 5], duplicates='drop')
+    except Exception:
+        rfm['F_Score'] = 3
+
+    try:
+        rfm['M_Score'] = pd.qcut(rfm['Monetary'], 5, labels=[1, 2, 3, 4, 5], duplicates='drop')
+    except Exception:
+        rfm['M_Score'] = 3
+
+    rfm['R_Score'] = rfm['R_Score'].astype(int)
+    rfm['F_Score'] = rfm['F_Score'].astype(int)
+    rfm['M_Score'] = rfm['M_Score'].astype(int)
+
+    def assign_segment(row):
+        r = row['R_Score']
+        f = row['F_Score']
+
+        if r >= 4 and f >= 4:
+            return 'Champions'
+        elif r >= 3 and f >= 3:
+            return 'Loyal Customers'
+        elif r >= 4 and f <= 2:
+            return 'New Customers'
+        elif r <= 2 and f >= 3:
+            return 'At Risk'
+        elif r <= 2 and f <= 2:
+            return 'Hibernating / Lost'
+        else:
+            return 'General Customers'
+
+    rfm['Segment'] = rfm.apply(assign_segment, axis=1)
+    counts = rfm['Segment'].value_counts().to_dict()
+    return counts

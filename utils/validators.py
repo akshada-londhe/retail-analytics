@@ -1,4 +1,3 @@
-import os
 from werkzeug.utils import secure_filename
 
 
@@ -14,19 +13,19 @@ def allowed_file(filename):
 def validate_upload(file):
     """
     Validate uploaded file.
-    
+
     Returns:
         tuple: (is_valid, error_message)
     """
     if not file:
         return False, "No file provided"
-    
+
     if file.filename == '':
         return False, "No filename"
-    
+
     if not allowed_file(file.filename):
         return False, "Only CSV files allowed"
-    
+
     return True, None
 
 

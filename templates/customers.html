@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block title %}Customers - Retail Analytics{% endblock %}
+
+{% block content %}
+{% if not has_uploads %}
+<div class="panel text-center" style="padding: 5rem 2rem; max-width: 600px; margin: 4rem auto; border: 1px solid var(--border-color); border-radius: 16px;">
+  <div style="font-size: 3.5rem; margin-bottom: 1.5rem; opacity: 0.85;">📊</div>
+  <h3 style="margin-bottom: 1rem; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.5px;">No Data Available</h3>
+  <p class="text-secondary" style="margin-bottom: 2rem; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; font-size: 0.95rem;">
+    Please upload a CSV dataset to activate your analytics workspace. Once uploaded, we will automatically analyze your sales, products, and customer segments.
+  </p>
+  <a href="/upload/" class="btn btn-primary" style="padding: 0.65rem 1.5rem; font-size: 0.9rem;">Upload Dataset</a>
+</div>
+{% else %}
+<div class="page-head">
+  <div>
+    <h2 class="display">Customer Analysis</h2>
+    <p>Customer value and RFM Segmentation</p>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="tag">
+    <p class="label">Top Customer Value</p>
+    <p class="value" id="kpi-top-cust">--</p>
+  </div>
+  <div class="tag">
+    <p class="label">Total Customers</p>
+    <p class="value" id="kpi-total-cust">--</p>
+  </div>
+  <div class="tag">
+    <p class="label">Avg Customer Spend</p>
+    <p class="value" id="kpi-avg-spend">--</p>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <h3>Customer RFM Segments <span class="tag-mono">FIG. 05</span></h3>
+    <div id="rfmChartShimmer" class="shimmer shimmer-chart" style="height: 280px; width: 100%;"></div>
+    <div class="chart-container">
+      <canvas id="rfmChart" class="d-none"></canvas>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>RFM Classification Key</h3>
+    <div class="segment-list mt-3">
+      <div class="segment-item" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; padding: 0.85rem 1.25rem;">
+        <div class="segment-meta">
+          <span class="segment-dot" style="background-color: #6366f1;"></span>
+          <span class="segment-name" style="font-weight: 700;">Champions</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; padding-left: 1.15rem;">
+          Low recency, high frequency, high spend. Keep happy!
+        </div>
+      </div>
+      <div class="segment-item" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; padding: 0.85rem 1.25rem;">
+        <div class="segment-meta">
+          <span class="segment-dot" style="background-color: #10b981;"></span>
+          <span class="segment-name" style="font-weight: 700;">Loyal Customers</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; padding-left: 1.15rem;">
+          Consistent purchases and spend. Promos work well.
+        </div>
+      </div>
+      <div class="segment-item" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; padding: 0.85rem 1.25rem;">
+        <div class="segment-meta">
+          <span class="segment-dot" style="background-color: #f59e0b;"></span>
+          <span class="segment-name" style="font-weight: 700;">New Customers</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; padding-left: 1.15rem;">
+          High recency, low frequency. Focus on onboarding.
+        </div>
+      </div>
+      <div class="segment-item" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; padding: 0.85rem 1.25rem;">
+        <div class="segment-meta">
+          <span class="segment-dot" style="background-color: #f43f5e;"></span>
+          <span class="segment-name" style="font-weight: 700;">At Risk</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; padding-left: 1.15rem;">
+          High frequency/spend, but inactive recently. Win back!
+        </div>
+      </div>
+      <div class="segment-item" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; padding: 0.85rem 1.25rem;">
+        <div class="segment-meta">
+          <span class="segment-dot" style="background-color: #64748b;"></span>
+          <span class="segment-name" style="font-weight: 700;">Hibernating / Lost</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; padding-left: 1.15rem;">
+          Low recency, low frequency. Re-acquire with care.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel mt-4">
+  <div class="panel-header">
+    <h3>Top Customer Ledger <span class="tag-mono">TABLE 01</span></h3>
+    <div class="table-search">
+      <input type="text" id="customerSearch" placeholder="Search customer name...">
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="leaders" id="customerTable">
+      <thead>
+        <tr>
+          <th>Customer Name</th>
+          <th style="text-align:right">Total Sales</th>
+          <th style="text-align:right">Order Count</th>
+          <th style="text-align:right">Avg Order Value</th>
+          <th style="text-align:right">Total Profit</th>
+        </tr>
+      </thead>
+      <tbody id="customerTableBody">
+        <!-- Shimmer Table rows -->
+        <tr class="shimmer-row">
+          <td><div class="shimmer" style="width: 140px; height: 16px;"></div></td>
+          <td><div class="shimmer" style="width: 80px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 50px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 80px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 80px; height: 16px; margin-left: auto;"></div></td>
+        </tr>
+        <tr class="shimmer-row">
+          <td><div class="shimmer" style="width: 160px; height: 16px;"></div></td>
+          <td><div class="shimmer" style="width: 90px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 40px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 90px; height: 16px; margin-left: auto;"></div></td>
+          <td><div class="shimmer" style="width: 90px; height: 16px; margin-left: auto;"></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if has_uploads %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script>
+  let rfmChartObj = null;
+  let allCustomersData = [];
+
+  document.addEventListener('DOMContentLoaded', function() {
+      loadCustomerData();
+
+      document.getElementById('customerSearch').addEventListener('input', function(e) {
+          filterCustomerTable(e.target.value);
+      });
+  });
+
+  function loadCustomerData() {
+      // Fetch KPIs
+      fetch('/api/dashboard')
+          .then(res => res.json())
+          .then(data => {
+              if (!data.error) {
+                  document.getElementById('kpi-total-cust').textContent = data.unique_customers.toLocaleString();
+                  document.getElementById('kpi-avg-spend').textContent = '$' + data.avg_order_value.toLocaleString('en-US', {maximumFractionDigits: 0});
+              }
+          })
+          .catch(err => console.error(err));
+
+      // Fetch Customer Table
+      fetch('/api/customers')
+          .then(res => res.json())
+          .then(data => {
+              if (data.customers) {
+                  allCustomersData = data.customers;
+                  if (allCustomersData.length > 0) {
+                      document.getElementById('kpi-top-cust').textContent = allCustomersData[0].Customer;
+                  } else {
+                      document.getElementById('kpi-top-cust').textContent = '--';
+                  }
+                  filterCustomerTable('');
+              }
+          })
+          .catch(err => console.error(err));
+
+      // Fetch RFM Segments
+      fetch('/api/customers/rfm')
+          .then(res => res.json())
+          .then(data => {
+              document.getElementById('rfmChartShimmer').classList.add('d-none');
+              document.getElementById('rfmChart').classList.remove('d-none');
+              if (data.rfm_segments) {
+                  renderRfmChart(data.rfm_segments);
+              }
+          })
+          .catch(err => {
+              document.getElementById('rfmChartShimmer').classList.add('d-none');
+              console.error(err);
+          });
+  }
+
+  function filterCustomerTable(query) {
+      const tbody = document.getElementById('customerTableBody');
+      tbody.innerHTML = '';
+      
+      const filtered = allCustomersData.filter(c => 
+          c.Customer.toLowerCase().includes(query.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center">No customers found matching search</td></tr>';
+          return;
+      }
+
+      filtered.forEach(c => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+              <td><span style="font-weight: 600; color: var(--text-primary);">${c.Customer}</span></td>
+              <td style="text-align:right">$${c.TotalSales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td style="text-align:right">${c.OrderCount}</td>
+              <td style="text-align:right">$${c.AvgOrderValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td style="text-align:right" class="${c.TotalProfit >= 0 ? 'profit-positive' : 'profit-negative'}">
+                  $${c.TotalProfit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+              </td>
+          `;
+          tbody.appendChild(row);
+      });
+  }
+
+  function renderRfmChart(segments) {
+      const ctx = document.getElementById('rfmChart').getContext('2d');
+      if (rfmChartObj) {
+          rfmChartObj.destroy();
+      }
+
+      const labels = Object.keys(segments);
+      const values = Object.values(segments);
+      const isDark = document.body.classList.contains('theme-dark');
+      
+      const colors = {
+          'Champions': '#6366f1',
+          'Loyal Customers': '#10b981',
+          'New Customers': '#f59e0b',
+          'At Risk': '#f43f5e',
+          'Hibernating / Lost': '#64748b',
+          'General Customers': '#8b5cf6'
+      };
+
+      const bgColors = labels.map(l => colors[l] || '#8b5cf6');
+
+      rfmChartObj = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+              labels: labels,
+              datasets: [{
+                  data: values,
+                  backgroundColor: bgColors,
+                  borderColor: isDark ? '#131b2e' : '#ffffff',
+                  borderWidth: 2
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: {
+                      position: 'bottom',
+                      labels: {
+                          color: isDark ? '#94a3b8' : '#475569',
+                          font: { family: 'Inter', size: 11 }
+                      }
+                  }
+              }
+          }
+      });
+  }
+</script>
+{% endif %}
+{% endblock %}

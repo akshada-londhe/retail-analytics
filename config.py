@@ -2,6 +2,7 @@ import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config:
     """Base configuration."""
 
@@ -14,9 +15,6 @@ class Config:
     REPORTS_FOLDER = os.path.join(BASE_DIR, "reports")
 
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
-
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    os.makedirs(REPORTS_FOLDER, exist_ok=True)
 
 
 class DevelopmentConfig(Config):

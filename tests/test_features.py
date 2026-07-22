@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from services.features import (
-    add_profit_margin, add_time_features, 
+    add_profit_margin, add_time_features,
     add_customer_metrics, engineer_features
 )
 
@@ -45,7 +45,9 @@ def test_add_customer_metrics(sample_df):
 def test_engineer_features(sample_df):
     """Test full feature engineering."""
     result = engineer_features(sample_df)
-    expected_cols = ['Year', 'Month', 'Quarter', 'Profit Margin %', 
-                    'Discount Amount', 'Customer_Total_Sales']
+    expected_cols = [
+        'Year', 'Month', 'Quarter', 'Profit Margin %',
+        'Discount Amount', 'Customer_Total_Sales'
+    ]
     for col in expected_cols:
         assert col in result.columns

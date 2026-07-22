@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Retail Analytics Platform — STORE-CTRL v1.0{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <h1>Smart Retail Analytics</h1>
+    <p class="lead">
+        Upload your sales data, explore interactive dashboards, and generate
+        actionable executive reports — all in one place.
+    </p>
+    <div class="gap-3" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
+        {% if not session.get('user') %}
+            <a href="/signup" class="btn btn-primary">Get Started</a>
+            <a href="/login" class="btn btn-outline">Sign In</a>
+        {% else %}
+            <a href="/dashboard/" class="btn btn-primary">Go to Dashboard</a>
+            <a href="/upload/" class="btn btn-outline">Upload Data</a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features -->
+<section style="margin-bottom: 4rem;">
+    <h2 class="text-center font-mono" style="margin-bottom: 2rem; font-size: 1.75rem;">Platform Capabilities</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📤</div>
+            <h3>Upload Data</h3>
+            <p>Import raw CSV sales records securely into your isolated user workspace.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Analytics Dashboard</h3>
+            <p>Track real-time trends, profits, monthly volumes, and key store indicators.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3>RFM Segmentation</h3>
+            <p>Classify customers into active clusters: Champions, Loyalists, and At Risk.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📄</div>
+            <h3>Report Center</h3>
+            <p>Download cleaned CSV, engineered Excel (XLSX) matrices, or text reports.</p>
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section style="margin-bottom: 4rem;">
+    <h2 class="text-center font-mono" style="margin-bottom: 2.5rem; font-size: 1.75rem;">How It Works</h2>
+    <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        <div class="text-center">
+            <div class="step-badge">1</div>
+            <h4 class="font-mono" style="margin-bottom: 0.5rem;">Import Dataset</h4>
+            <p class="text-muted" style="font-size: 0.9rem;">Upload any standard Superstore CSV format file inside the upload panel.</p>
+        </div>
+        <div class="text-center">
+            <div class="step-badge">2</div>
+            <h4 class="font-mono" style="margin-bottom: 0.5rem;">Analyze Statistics</h4>
+            <p class="text-muted" style="font-size: 0.9rem;">Explore dynamic charts, KPI indicators, products, and customer classifications.</p>
+        </div>
+        <div class="text-center">
+            <div class="step-badge">3</div>
+            <h4 class="font-mono" style="margin-bottom: 0.5rem;">Download Reports</h4>
+            <p class="text-muted" style="font-size: 0.9rem;">Generate executive summaries and structured spreadsheets in one click.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Tech stack -->
+<section class="text-center" style="margin-bottom: 4rem;">
+    <h2 class="font-mono" style="margin-bottom: 1.5rem; font-size: 1.5rem;">Platform Technologies</h2>
+    <div class="tech-badges" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
+        <span class="tech-badge">Python / Flask</span>
+        <span class="tech-badge">SQLAlchemy (SQLite)</span>
+        <span class="tech-badge">Pandas / NumPy</span>
+        <span class="tech-badge">Chart.js 4</span>
+        <span class="tech-badge">OpenPyXL</span>
+        <span class="tech-badge">CSS Custom Variables</span>
+    </div>
+</section>
+
+<!-- Demo credentials notice -->
+{% if not session.get('user') %}
+<section class="demo-notice" style="margin-top: 2rem;">
+  <div class="container" style="display: flex; justify-content: center;">
+    <div class="demo-card" style="border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; max-width: 450px; width: 100%; text-align: center; background-color: var(--bg-panel);">
+      <h3 style="margin-bottom: 0.5rem;">Demo Account</h3>
+      <p class="text-secondary" style="font-size: 0.9rem; margin-bottom: 1.25rem;">Try it instantly with the demo credentials:</p>
+      <div class="demo-creds" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <code style="background-color: var(--bg-primary); padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.85rem;">username: admin</code>
+        <code style="background-color: var(--bg-primary); padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.85rem;">password: admin</code>
+      </div>
+      <a href="/login" class="btn btn-primary" style="width: 100%;">Sign In as Demo</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

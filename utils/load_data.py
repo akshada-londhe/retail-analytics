@@ -5,8 +5,6 @@ from pathlib import Path
 
 
 def load_dataset(filepath):
-    
-
     filepath = Path(filepath)
 
     if not filepath.exists():
@@ -22,7 +20,7 @@ def load_dataset(filepath):
         date_columns = ["Order Date", "Ship Date"]
         for col in date_columns:
             if col in df.columns:
-                df[col] = pd.to_datetime(df[col])
+                df[col] = pd.to_datetime(df[col], format='mixed', errors='coerce')
 
         return df
 

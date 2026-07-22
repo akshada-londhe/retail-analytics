@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Reports - Retail Analytics{% endblock %}
+
+{% block content %}
+{% if not has_uploads %}
+<div class="panel text-center" style="padding: 5rem 2rem; max-width: 600px; margin: 4rem auto; border: 1px solid var(--border-color); border-radius: 16px;">
+  <div style="font-size: 3.5rem; margin-bottom: 1.5rem; opacity: 0.85;">📊</div>
+  <h3 style="margin-bottom: 1rem; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.5px;">No Data Available</h3>
+  <p class="text-secondary" style="margin-bottom: 2rem; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.6; font-size: 0.95rem;">
+    Please upload a CSV dataset to activate your analytics workspace. Once uploaded, we will automatically analyze your sales, products, and customer segments.
+  </p>
+  <a href="/upload/" class="btn btn-primary" style="padding: 0.65rem 1.5rem; font-size: 0.9rem;">Upload Dataset</a>
+</div>
+{% else %}
+<div class="page-head">
+  <div>
+    <h2 class="display">Report Center</h2>
+    <p>Generate, preview, and download custom analytics exports</p>
+  </div>
+</div>
+
+<div class="grid-2">
+  <!-- Download Controls Panel -->
+  <div class="panel">
+    <h3>Generate Exports</h3>
+    <p class="text-secondary" style="font-size: 0.9rem; margin-bottom: 1.5rem;">Select a file format to export analysis of your active dataset.</p>
+    
+    <div class="export-cards">
+      <div class="export-card">
+        <div class="card-details">
+          <h4>📊 Executive Summary (TXT)</h4>
+          <p>Key Performance Indicators, top regional markets, and products in text format.</p>
+        </div>
+        <a id="btnDownloadSummary" href="/reports/summary" class="btn btn-primary">Download TXT</a>
+      </div>
+
+      <div class="export-card">
+        <div class="card-details">
+          <h4>📥 Cleaned Raw Data (CSV)</h4>
+          <p>Complete cleaned records ready for external BI tool uploads.</p>
+        </div>
+        <a id="btnDownloadCSV" href="/reports/csv" class="btn btn-accent">Download CSV</a>
+      </div>
+
+      <div class="export-card">
+        <div class="card-details">
+          <h4>📈 Engineered Data Matrix (Excel)</h4>
+          <p>Formatted spreadsheet including discount impacts, margins, and customer stats.</p>
+        </div>
+        <a id="btnDownloadExcel" href="/reports/excel" class="btn btn-success">Download XLSX</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Terminal Preview Panel -->
+  <div class="panel">
+    <h3>Live Executive Summary Preview</h3>
+    <div class="terminal-container mt-3">
+      <div class="terminal-header">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="terminal-title">executive_summary.txt</span>
+      </div>
+      <pre class="terminal-body" id="reportPreview">Generating preview...</pre>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if has_uploads %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      loadReportPreview();
+  });
+
+  function loadReportPreview() {
+      const previewEl = document.getElementById('reportPreview');
+      previewEl.textContent = 'Generating report preview...';
+      
+      fetch('/reports/preview')
+          .then(res => {
+              if (!res.ok) throw new Error('Failed to generate preview');
+              return res.json();
+          })
+          .then(data => {
+              if (data.preview) {
+                  previewEl.textContent = data.preview;
+              } else {
+                  previewEl.textContent = 'Error: Preview is empty.';
+              }
+          })
+          .catch(err => {
+              console.error(err);
+              previewEl.textContent = 'Error compiling report. Verify that the active dataset is populated and matches format.';
+          });
+  }
+</script>
+{% endif %}
+{% endblock %}
