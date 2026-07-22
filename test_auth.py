@@ -5,6 +5,11 @@ from app import create_app
 
 app = create_app()
 
+with app.app_context():
+    from models import db, User
+    User.query.filter_by(username='testuser').delete()
+    db.session.commit()
+
 print('=== TESTING SIGNUP/LOGIN FLOW ===')
 with app.test_client() as client:
     # Test signup page loads
