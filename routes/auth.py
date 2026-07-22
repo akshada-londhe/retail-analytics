@@ -1,11 +1,7 @@
 from flask import Blueprint, render_template, request, session, redirect
-from werkzeug.security import generate_password_hash, check_password_hash
+from models import db, User
 
 auth = Blueprint('auth', __name__)
-
-# In-memory user store (dictionary)
-# Format: {username: {'email': email, 'password_hash': hash}}
-users_store = {}
 
 
 @auth.route('/signup', methods=['GET', 'POST'])
@@ -23,19 +19,18 @@ def signup():
             error = 'Passwords do not match.'
         elif len(password) < 6:
             error = 'Password must be at least 6 characters.'
-        elif username in users_store:
+        elif User.query.filter_by(username=username).first():
             error = 'Username already taken.'
-        elif any(u['email'] == email for u in users_store.values()):
+        elif User.query.filter_by(email=email).first():
             error = 'Email already registered.'
 
         if error:
             return render_template('signup.html', error=error)
 
-        # Store user with hashed password
-        users_store[username] = {
-            'email': email,
-            'password_hash': generate_password_hash(password)
-        }
+        user = User(username=username, email=email)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
 
         session['user'] = username
         return redirect('/dashboard/')
@@ -48,9 +43,9 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        user = users_store.get(username)
+        user = User.query.filter_by(username=username).first()
 
-        if user and check_password_hash(user['password_hash'], password):
+        if user and user.check_password(password):
             session['user'] = username
             return redirect('/dashboard/')
 
