@@ -38,6 +38,11 @@ function setKpiText(elementId, value) {
     if (el) el.textContent = value;
 }
 
+function getUploadId() {
+    const select = document.getElementById('uploadSelect');
+    return select ? select.value : '';
+}
+
 function loadDashboard() {
     // 1. Fetch Dashboard KPIs
     fetch('/api/dashboard')

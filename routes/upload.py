@@ -6,10 +6,10 @@ from models import db, Upload, User
 from utils.validators import validate_upload, get_safe_filename
 from utils.load_data import load_dataset
 
-upload_bp = Blueprint('upload', __name__)
+upload_bp = Blueprint('upload', __name__, url_prefix='/upload')
 
 
-@upload_bp.route('/upload/', methods=['GET', 'POST'])
+@upload_bp.route('/', methods=['GET', 'POST'])
 def upload_file():
     """Handle file upload and list user datasets."""
     if 'user' not in session:
@@ -93,7 +93,7 @@ def upload_file():
         ), 500
 
 
-@upload_bp.route('/upload/activate/<int:upload_id>', methods=['POST'])
+@upload_bp.route('/activate/<int:upload_id>', methods=['POST'])
 def activate_dataset(upload_id):
     """Set an uploaded dataset as the active workspace."""
     if 'user' not in session:
@@ -110,7 +110,7 @@ def activate_dataset(upload_id):
     return redirect('/upload/')
 
 
-@upload_bp.route('/upload/delete/<int:upload_id>', methods=['POST'])
+@upload_bp.route('/delete/<int:upload_id>', methods=['POST'])
 def delete_dataset(upload_id):
     """Delete an uploaded dataset and clean up raw files."""
     if 'user' not in session:

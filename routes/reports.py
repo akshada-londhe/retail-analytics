@@ -1,6 +1,6 @@
 """Report generation and download routes."""
 
-from flask import Blueprint, jsonify, send_file, render_template, request, current_app, session
+from flask import Blueprint, jsonify, send_file, render_template, request, current_app, session, redirect
 from services.reports import generate_csv_report, generate_excel_report, generate_summary_report
 from services.analytics import get_dashboard_kpis
 from models import User, Upload

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Smart Retail Analytics Platform{% endblock %}
+{% block title %}Retail Analytics Platform — STORE-CTRL v1.0{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -10,9 +10,14 @@
         Upload your sales data, explore interactive dashboards, and generate
         actionable executive reports — all in one place.
     </p>
-    <div class="gap-3">
-        <a href="/signup" class="btn btn-primary">Get Started</a>
-        <a href="/login" class="btn btn-outline">Sign In</a>
+    <div class="gap-3" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
+        {% if not session.get('user') %}
+            <a href="/signup" class="btn btn-primary">Get Started</a>
+            <a href="/login" class="btn btn-outline">Sign In</a>
+        {% else %}
+            <a href="/dashboard/" class="btn btn-primary">Go to Dashboard</a>
+            <a href="/upload/" class="btn btn-outline">Upload Data</a>
+        {% endif %}
     </div>
 </section>
 
@@ -66,9 +71,9 @@
 </section>
 
 <!-- Tech stack -->
-<section class="text-center">
+<section class="text-center" style="margin-bottom: 4rem;">
     <h2 class="font-mono" style="margin-bottom: 1.5rem; font-size: 1.5rem;">Platform Technologies</h2>
-    <div class="tech-badges">
+    <div class="tech-badges" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
         <span class="tech-badge">Python / Flask</span>
         <span class="tech-badge">SQLAlchemy (SQLite)</span>
         <span class="tech-badge">Pandas / NumPy</span>
@@ -77,4 +82,21 @@
         <span class="tech-badge">CSS Custom Variables</span>
     </div>
 </section>
+
+<!-- Demo credentials notice -->
+{% if not session.get('user') %}
+<section class="demo-notice" style="margin-top: 2rem;">
+  <div class="container" style="display: flex; justify-content: center;">
+    <div class="demo-card" style="border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; max-width: 450px; width: 100%; text-align: center; background-color: var(--bg-panel);">
+      <h3 style="margin-bottom: 0.5rem;">Demo Account</h3>
+      <p class="text-secondary" style="font-size: 0.9rem; margin-bottom: 1.25rem;">Try it instantly with the demo credentials:</p>
+      <div class="demo-creds" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <code style="background-color: var(--bg-primary); padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.85rem;">username: admin</code>
+        <code style="background-color: var(--bg-primary); padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.85rem;">password: admin</code>
+      </div>
+      <a href="/login" class="btn btn-primary" style="width: 100%;">Sign In as Demo</a>
+    </div>
+  </div>
+</section>
+{% endif %}
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, session, request, Blueprint
 from config import DevelopmentConfig
 from models import db, User
 import os
@@ -29,6 +29,7 @@ def create_app(config_class=DevelopmentConfig):
     from routes.reports import reports_bp
     app.register_blueprint(reports_bp)
 
+
     # Create directories at runtime, not import time
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs(app.config['REPORTS_FOLDER'], exist_ok=True)
@@ -46,14 +47,29 @@ def create_app(config_class=DevelopmentConfig):
             db.session.add(admin)
             db.session.commit()
 
-    print("\n===== Registered Routes =====")
-    for rule in app.url_map.iter_rules():
-        print(rule)
-    print("=============================\n")
+    @app.errorhandler(404)
+    def handle_404(error):
+        return render_template('404.html'), 404
+
+    @app.before_request
+    def before_request():
+        if session.get('user'):
+            active_page = request.path.split('/')[-1] if request.path != '/' else 'dashboard'
+            if active_page == '':
+                active_page = 'dashboard'
+        else:
+            active_page = None
+        
+        request.active_page = active_page
 
     return app
 
 
 if __name__ == '__main__':
     app = create_app()
+    print("\n===== Registered Routes =====")
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != 'static':
+            print(f'{rule.rule:30} -> {rule.endpoint}')
+    print("=============================\n")
     app.run(debug=True)
